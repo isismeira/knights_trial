@@ -88,7 +88,7 @@ class Obstacle(pygame.sprite.Sprite):
 
 def display_score():
 	current_time = int(pygame.time.get_ticks() / 1000) - start_time
-	score_surf = test_font.render(f'Score: {current_time}',False,(64,64,64))
+	score_surf = test_font.render(f'Score: {current_time}',False,(255,255,255))
 	score_rect = score_surf.get_rect(center = (400,50))
 	screen.blit(score_surf,score_rect)
 	return current_time
@@ -130,7 +130,7 @@ def player_animation():
 
 pygame.init()
 screen = pygame.display.set_mode((800,400))
-pygame.display.set_caption('Runner')
+pygame.display.set_caption('Knight`s Trial')
 clock = pygame.time.Clock()
 test_font = pygame.font.Font('font/Pixeltype.ttf', 50)
 game_active = False
@@ -279,13 +279,13 @@ while True:
 		# game_active = collisions(player_rect,obstacle_rect_list)
 		
 	else:
-		screen.fill((94,129,162))
+		screen.fill((25,62,43))
 		screen.blit(player_stand,player_stand_rect)
 		obstacle_rect_list.clear()
 		player_rect.midbottom = (80,300)
 		player_gravity = 0
 
-		score_message = test_font.render(f'Your score: {score}',False,(111,196,169))
+		score_message = test_font.render(f'Your score: {score}',False,(0,0,0))
 		score_message_rect = score_message.get_rect(center = (400,330))
 		screen.blit(game_name,game_name_rect)
 
