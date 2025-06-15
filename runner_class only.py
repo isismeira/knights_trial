@@ -180,14 +180,8 @@ ground_height = int(SCREEN_HEIGHT * 0.25)
 ground_surface = pygame.transform.scale(original_ground, (SCREEN_WIDTH, ground_height))
 
 # Intro screen
-player_stand = pygame.image.load('graphics/player/player_stand.png').convert_alpha()
-stand_scale = (SCREEN_HEIGHT / 400) * 2  # Manter proporção do zoom original
-player_stand = pygame.transform.scale(player_stand, 
-	(int(player_stand.get_width() * stand_scale), int(player_stand.get_height() * stand_scale)))
-player_stand_rect = player_stand.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.5)))
-
-game_name = test_font.render('Knight\'s Trial',False,(0,0,0))
-game_name_rect = game_name.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.2)))
+logo = pygame.image.load('graphics/logo.png').convert_alpha()
+logo_rect = logo.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.5)))
 
 game_message = test_font.render('Press space to run',False,(0,0,0))
 game_message_rect = game_message.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.825)))
@@ -239,11 +233,10 @@ while True:
 		
 	else:
 		screen.fill((25,62,43))
-		screen.blit(player_stand,player_stand_rect)
+		screen.blit(logo,logo_rect)
 
 		score_message = test_font.render(f'Your score: {score}',False,(0,0,0))
 		score_message_rect = score_message.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.825)))
-		screen.blit(game_name,game_name_rect)
 
 		if score == 0: screen.blit(game_message,game_message_rect)
 		else: screen.blit(score_message,score_message_rect)
