@@ -156,8 +156,9 @@ player.add(Player(SCREEN_WIDTH, SCREEN_HEIGHT))
 obstacle_group = pygame.sprite.Group()
 
 # Carregar e ajustar imagens de fundo para dimensões específicas
-original_sky = pygame.image.load('graphics/Sky.jpeg').convert()
+original_sky = pygame.image.load('graphics/florestabg.png').convert()
 original_ground = pygame.image.load('graphics/ground.jpeg').convert()
+original_menubg = pygame.image.load('graphics/menubgsky.png').convert()
 
 # Calcular a proporção da tela
 screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
@@ -174,6 +175,7 @@ else:
     new_width = int(SCREEN_HEIGHT * sky_ratio)
 
 sky_surface = pygame.transform.scale(original_sky, (new_width, new_height))
+menubg_surface = pygame.transform.scale(original_menubg, (new_width, new_height))
 
 # Escalar o chão para cobrir toda a largura da tela
 ground_height = int(SCREEN_HEIGHT * 0.25)
@@ -232,9 +234,10 @@ while True:
 		game_active = collision_sprite(player, obstacle_group)
 		
 	else:
-		screen.fill((25,62,43))
+		sky_x = (SCREEN_WIDTH - new_width) // 2
+		sky_y = (SCREEN_HEIGHT - new_height) // 2
+		screen.blit(menubg_surface, (sky_x, sky_y))
 		screen.blit(logo,logo_rect)
-
 		score_message = test_font.render(f'Your score: {score}',False,(0,0,0))
 		score_message_rect = score_message.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.825)))
 
