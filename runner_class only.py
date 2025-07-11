@@ -149,7 +149,25 @@ score = 0
 bg_music = pygame.mixer.Sound('audio/music.wav')
 bg_music.play(loops = -1)
 
-#Groups
+# Controle de fases e cutscenes
+# Possíveis valores: 'menu', 'cutscene1', 'phase1', 'cutscene2', 'phase2', 'cutscene3', 'phase3', 'cutscene4'
+game_stage = 'menu'
+# Para controlar o tempo de cada fase/cutscene
+game_stage_start_time = 0
+# Para controlar o tempo do próximo spawn de obstáculo após cada fase
+next_obstacle_time = 0
+
+# Carregar imagens das cutscenes
+def load_cutscene(path):
+    img = pygame.image.load(path).convert()
+    return pygame.transform.scale(img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+cutscene1_img = load_cutscene('graphics/cutscene_1.png')
+cutscene2_img = load_cutscene('graphics/cutscene_2.png')
+cutscene3_img = load_cutscene('graphics/cutscene_3.png')
+cutscene4_img = load_cutscene('graphics/cutscene_4.png')
+
+# Groups
 player = pygame.sprite.GroupSingle()
 player.add(Player(SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -157,7 +175,7 @@ obstacle_group = pygame.sprite.Group()
 
 # Carregar e ajustar imagens de fundo para dimensões específicas
 original_sky = pygame.image.load('graphics/florestabg.png').convert()
-original_ground = pygame.image.load('graphics/ground.jpeg').convert()
+original_ground = pygame.image.load('graphics/ground_1.jpeg').convert()
 original_menubg = pygame.image.load('graphics/menubgsky.png').convert()
 
 # Calcular a proporção da tela
@@ -204,43 +222,108 @@ while True:
 			pygame.quit()
 			exit()
 
-		if game_active:
+		if game_stage == 'phase1' or game_stage == 'phase2' or game_stage == 'phase3':
 			if event.type == obstacle_timer:
-				obstacle_group.add(Obstacle(choice(['fly','snail','snail','snail']), SCREEN_WIDTH, SCREEN_HEIGHT))
-		
-		else:
+				# Só permitir spawn de obstáculos após o delay inicial da fase
+				if pygame.time.get_ticks() >= next_obstacle_time:
+					obstacle_group.add(Obstacle(choice(['fly','snail','snail','snail']), SCREEN_WIDTH, SCREEN_HEIGHT))
+		elif game_stage == 'menu':
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-				game_active = True
-				start_time = int(pygame.time.get_ticks() / 1000)
+				game_stage = 'cutscene1'
+				game_stage_start_time = pygame.time.get_ticks()
+				# Resetar score e grupos
+				obstacle_group.empty()
+				player.sprite.rect.bottom = player.sprite.ground_y
+				player.sprite.gravity = 0
+				score = 0
 
-	if game_active:
-		# Desenhar céu cobrindo toda a tela
+	# Controle de fases/cutscenes
+	now = pygame.time.get_ticks()
+	if game_stage == 'cutscene1':
+		screen.blit(cutscene1_img, (0, 0))
+		if now - game_stage_start_time >= 5000:
+			game_stage = 'phase1'
+			game_stage_start_time = now
+			obstacle_group.empty()  # Limpar obstáculos
+			next_obstacle_time = now + 2000  # 2 segundos de delay
+	elif game_stage == 'phase1':
+		# Gameplay normal (primeira fase)
 		sky_x = (SCREEN_WIDTH - new_width) // 2
 		sky_y = (SCREEN_HEIGHT - new_height) // 2
 		screen.blit(sky_surface, (sky_x, sky_y))
-		
-		# Desenhar chão na parte inferior
 		ground_y = int(SCREEN_HEIGHT * 0.75)
 		screen.blit(ground_surface, (0, ground_y))
-		
 		score = display_score(screen, test_font, start_time, SCREEN_WIDTH, SCREEN_HEIGHT)
-		
 		player.draw(screen)
 		player.update()
-
 		obstacle_group.draw(screen)
 		obstacle_group.update()
-
-		game_active = collision_sprite(player, obstacle_group)
-		
+		if not collision_sprite(player, obstacle_group):
+			game_stage = 'menu'
+		elif now - game_stage_start_time >= 15000:
+			game_stage = 'cutscene2'
+			game_stage_start_time = now
+	elif game_stage == 'cutscene2':
+		screen.blit(cutscene2_img, (0, 0))
+		if now - game_stage_start_time >= 5000:
+			game_stage = 'phase2'
+			game_stage_start_time = now
+			obstacle_group.empty()  # Limpar obstáculos
+			next_obstacle_time = now + 2000  # 2 segundos de delay
+	elif game_stage == 'phase2':
+		# Gameplay segunda fase
+		sky_x = (SCREEN_WIDTH - new_width) // 2
+		sky_y = (SCREEN_HEIGHT - new_height) // 2
+		screen.blit(sky_surface, (sky_x, sky_y))
+		ground_y = int(SCREEN_HEIGHT * 0.75)
+		screen.blit(ground_surface, (0, ground_y))
+		score = display_score(screen, test_font, start_time, SCREEN_WIDTH, SCREEN_HEIGHT)
+		player.draw(screen)
+		player.update()
+		obstacle_group.draw(screen)
+		obstacle_group.update()
+		if not collision_sprite(player, obstacle_group):
+			game_stage = 'menu'
+		elif now - game_stage_start_time >= 15000:
+			game_stage = 'cutscene3'
+			game_stage_start_time = now
+	elif game_stage == 'cutscene3':
+		screen.blit(cutscene3_img, (0, 0))
+		if now - game_stage_start_time >= 5000:
+			game_stage = 'phase3'
+			game_stage_start_time = now
+			obstacle_group.empty()  # Limpar obstáculos
+			next_obstacle_time = now + 2000  # 2 segundos de delay
+	elif game_stage == 'phase3':
+		# Gameplay terceira fase
+		sky_x = (SCREEN_WIDTH - new_width) // 2
+		sky_y = (SCREEN_HEIGHT - new_height) // 2
+		screen.blit(sky_surface, (sky_x, sky_y))
+		ground_y = int(SCREEN_HEIGHT * 0.75)
+		screen.blit(ground_surface, (0, ground_y))
+		score = display_score(screen, test_font, start_time, SCREEN_WIDTH, SCREEN_HEIGHT)
+		player.draw(screen)
+		player.update()
+		obstacle_group.draw(screen)
+		obstacle_group.update()
+		if not collision_sprite(player, obstacle_group):
+			game_stage = 'menu'
+		elif now - game_stage_start_time >= 15000:
+			game_stage = 'cutscene4'
+			game_stage_start_time = now
+	elif game_stage == 'cutscene4':
+		screen.blit(cutscene4_img, (0, 0))
+		if now - game_stage_start_time >= 5000:
+			game_stage = 'menu'
+			game_stage_start_time = now
 	else:
+		# Menu
 		sky_x = (SCREEN_WIDTH - new_width) // 2
 		sky_y = (SCREEN_HEIGHT - new_height) // 2
 		screen.blit(menubg_surface, (sky_x, sky_y))
 		screen.blit(logo,logo_rect)
 		score_message = test_font.render(f'Your score: {score}',False,(0,0,0))
 		score_message_rect = score_message.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.825)))
-
 		if score == 0: screen.blit(game_message,game_message_rect)
 		else: screen.blit(score_message,score_message_rect)
 
