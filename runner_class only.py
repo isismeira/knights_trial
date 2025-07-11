@@ -180,6 +180,12 @@ original_sky = pygame.image.load('graphics/florestabg.png').convert()
 original_ground = pygame.image.load('graphics/ground_1.jpeg').convert()
 original_menubg = pygame.image.load('graphics/menubgsky.png').convert()
 
+# Carregar backgrounds e chãos específicos para cada fase
+sky_2 = pygame.image.load('graphics/sky_2.png').convert()
+sky_3 = pygame.image.load('graphics/sky_3.png').convert()
+ground_2 = pygame.image.load('graphics/ground_2.jpeg').convert()
+ground_3 = pygame.image.load('graphics/ground_3.jpeg').convert()
+
 # Calcular a proporção da tela
 screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
 sky_ratio = original_sky.get_width() / original_sky.get_height()
@@ -197,9 +203,15 @@ else:
 sky_surface = pygame.transform.scale(original_sky, (new_width, new_height))
 menubg_surface = pygame.transform.scale(original_menubg, (new_width, new_height))
 
+# Escalar os backgrounds e chãos específicos para cada fase
+sky_2_surface = pygame.transform.scale(sky_2, (new_width, new_height))
+sky_3_surface = pygame.transform.scale(sky_3, (new_width, new_height))
+
 # Escalar o chão para cobrir toda a largura da tela
 ground_height = int(SCREEN_HEIGHT * 0.25)
 ground_surface = pygame.transform.scale(original_ground, (SCREEN_WIDTH, ground_height))
+ground_2_surface = pygame.transform.scale(ground_2, (SCREEN_WIDTH, ground_height))
+ground_3_surface = pygame.transform.scale(ground_3, (SCREEN_WIDTH, ground_height))
 
 # Intro screen
 logo = pygame.image.load('graphics/logo.png').convert_alpha()
@@ -290,9 +302,9 @@ while True:
 		# Gameplay segunda fase
 		sky_x = (SCREEN_WIDTH - new_width) // 2
 		sky_y = (SCREEN_HEIGHT - new_height) // 2
-		screen.blit(sky_surface, (sky_x, sky_y))
+		screen.blit(sky_2_surface, (sky_x, sky_y))
 		ground_y = int(SCREEN_HEIGHT * 0.75)
-		screen.blit(ground_surface, (0, ground_y))
+		screen.blit(ground_2_surface, (0, ground_y))
 		score = display_score(screen, test_font, start_time, SCREEN_WIDTH, SCREEN_HEIGHT)
 		player.draw(screen)
 		player.update()
@@ -317,9 +329,9 @@ while True:
 		# Gameplay terceira fase
 		sky_x = (SCREEN_WIDTH - new_width) // 2
 		sky_y = (SCREEN_HEIGHT - new_height) // 2
-		screen.blit(sky_surface, (sky_x, sky_y))
+		screen.blit(sky_3_surface, (sky_x, sky_y))
 		ground_y = int(SCREEN_HEIGHT * 0.75)
-		screen.blit(ground_surface, (0, ground_y))
+		screen.blit(ground_3_surface, (0, ground_y))
 		score = display_score(screen, test_font, start_time, SCREEN_WIDTH, SCREEN_HEIGHT)
 		player.draw(screen)
 		player.update()
