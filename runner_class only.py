@@ -160,10 +160,10 @@ def load_cutscene(path):
     img = pygame.image.load(path).convert()
     return pygame.transform.scale(img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-cutscene1_img = load_cutscene('graphics/cutscene_1.png')
-cutscene2_img = load_cutscene('graphics/cutscene_2.png')
-cutscene3_img = load_cutscene('graphics/cutscene_3.png')
-cutscene4_img = load_cutscene('graphics/cutscene_4.png')
+cutscene1_img = load_cutscene('graphics/cutscene_1.jpeg')
+cutscene2_img = load_cutscene('graphics/cutscene_2.jpeg')
+cutscene3_img = load_cutscene('graphics/cutscene_3.jpeg')
+cutscene4_img = load_cutscene('graphics/cutscene_4.jpeg')
 
 # Groups
 player = pygame.sprite.GroupSingle()
