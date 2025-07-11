@@ -66,53 +66,51 @@ class Player(pygame.sprite.Sprite):
 		self.apply_gravity()
 		self.animation_state()
 
+# Dicionário de sprites por fase
+OBSTACLE_SPRITES = {
+    'phase1': {
+        'fly': ['graphics/fly/fly1.png', 'graphics/fly/fly2.png'],
+        'snail': ['graphics/snail/snail1.png', 'graphics/snail/snail2.png']
+    },
+    'phase2': {
+        'fly': ['graphics/fly/Fly3.png', 'graphics/fly/Fly4.png'],
+        'snail': ['graphics/snail/snail3.png', 'graphics/snail/snail4.png']
+    },
+    'phase3': {
+        'fly': ['graphics/fly/Fly5.png', 'graphics/fly/Fly6.png'],
+        'snail': ['graphics/snail/snail5.png', 'graphics/snail/snail6.png']
+    }
+}
+
 class Obstacle(pygame.sprite.Sprite):
-	def __init__(self, type, screen_width, screen_height):
-		super().__init__()
-		
-		scale_factor = screen_height / 400
-		ground_y = int(screen_height * 0.75)
-		
-		if type == 'fly':
-			fly_1 = pygame.image.load('graphics/fly/fly1.png').convert_alpha()
-			fly_2 = pygame.image.load('graphics/fly/fly2.png').convert_alpha()
-			# Escalar sprites da mosca
-			fly_1_scaled = pygame.transform.scale(fly_1,
-				(int(fly_1.get_width() * scale_factor), int(fly_1.get_height() * scale_factor)))
-			fly_2_scaled = pygame.transform.scale(fly_2,
-				(int(fly_2.get_width() * scale_factor), int(fly_2.get_height() * scale_factor)))
-			self.frames = [fly_1_scaled, fly_2_scaled]
-			y_pos = int(screen_height * 0.525)  # Proporção equivalente a 210/400
-		else:
-			snail_1 = pygame.image.load('graphics/snail/snail1.png').convert_alpha()
-			snail_2 = pygame.image.load('graphics/snail/snail2.png').convert_alpha()
-			# Escalar sprites do caracol
-			snail_1_scaled = pygame.transform.scale(snail_1,
-				(int(snail_1.get_width() * scale_factor), int(snail_1.get_height() * scale_factor)))
-			snail_2_scaled = pygame.transform.scale(snail_2,
-				(int(snail_2.get_width() * scale_factor), int(snail_2.get_height() * scale_factor)))
-			self.frames = [snail_1_scaled, snail_2_scaled]
-			y_pos = ground_y
-
-		self.animation_index = 0
-		self.image = self.frames[self.animation_index]
-		spawn_x = randint(int(screen_width * 1.125), int(screen_width * 1.375))  # Proporção de 900-1100/800
-		self.rect = self.image.get_rect(midbottom = (spawn_x, y_pos))
-		self.speed = int(6 * (screen_width / 800))  # Escalar velocidade
-
-	def animation_state(self):
-		self.animation_index += 0.1 
-		if self.animation_index >= len(self.frames): self.animation_index = 0
-		self.image = self.frames[int(self.animation_index)]
-
-	def update(self):
-		self.animation_state()
-		self.rect.x -= self.speed
-		self.destroy()
-
-	def destroy(self):
-		if self.rect.x <= -100: 
-			self.kill()
+    def __init__(self, type, screen_width, screen_height, phase):
+        super().__init__()
+        scale_factor = screen_height / 400
+        ground_y = int(screen_height * 0.75)
+        # Selecionar sprites conforme a fase
+        sprites = OBSTACLE_SPRITES[phase][type]
+        img1 = pygame.image.load(sprites[0]).convert_alpha()
+        img2 = pygame.image.load(sprites[1]).convert_alpha()
+        img1_scaled = pygame.transform.scale(img1, (int(img1.get_width() * scale_factor), int(img1.get_height() * scale_factor)))
+        img2_scaled = pygame.transform.scale(img2, (int(img2.get_width() * scale_factor), int(img2.get_height() * scale_factor)))
+        self.frames = [img1_scaled, img2_scaled]
+        y_pos = int(screen_height * 0.525) if type == 'fly' else ground_y
+        self.animation_index = 0
+        self.image = self.frames[self.animation_index]
+        spawn_x = randint(int(screen_width * 1.125), int(screen_width * 1.375))
+        self.rect = self.image.get_rect(midbottom = (spawn_x, y_pos))
+        self.speed = int(6 * (screen_width / 800))
+    def animation_state(self):
+        self.animation_index += 0.1
+        if self.animation_index >= len(self.frames): self.animation_index = 0
+        self.image = self.frames[int(self.animation_index)]
+    def update(self):
+        self.animation_state()
+        self.rect.x -= self.speed
+        self.destroy()
+    def destroy(self):
+        if self.rect.x <= -100:
+            self.kill()
 
 def display_score(screen, test_font, start_time, screen_width, screen_height):
 	current_time = int(pygame.time.get_ticks() / 1000) - start_time
@@ -207,8 +205,10 @@ game_message = test_font.render('Press space to run',False,(0,0,0))
 game_message_rect = game_message.get_rect(center = (SCREEN_WIDTH//2, int(SCREEN_HEIGHT * 0.825)))
 
 # Timer - ajustar baseado na velocidade proporcional
+# Facilitar: aumentar o intervalo base para 3000 ms
+EASY_TIMER_BASE = 3000
 obstacle_timer = pygame.USEREVENT + 1
-timer_interval = int(1500 * (800 / SCREEN_WIDTH))  # Ajustar frequência baseado na largura
+timer_interval = int(EASY_TIMER_BASE * (800 / SCREEN_WIDTH))
 pygame.time.set_timer(obstacle_timer, timer_interval)
 
 while True:
@@ -226,7 +226,8 @@ while True:
 			if event.type == obstacle_timer:
 				# Só permitir spawn de obstáculos após o delay inicial da fase
 				if pygame.time.get_ticks() >= next_obstacle_time:
-					obstacle_group.add(Obstacle(choice(['fly','snail','snail','snail']), SCREEN_WIDTH, SCREEN_HEIGHT))
+					# Passar a fase correta para o obstáculo
+					obstacle_group.add(Obstacle(choice(['fly','snail','snail','snail']), SCREEN_WIDTH, SCREEN_HEIGHT, game_stage))
 		elif game_stage == 'menu':
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 				game_stage = 'cutscene1'
@@ -246,6 +247,9 @@ while True:
 			game_stage_start_time = now
 			obstacle_group.empty()  # Limpar obstáculos
 			next_obstacle_time = now + 2000  # 2 segundos de delay
+	elif game_stage == 'cutscene1' and now - game_stage_start_time == 1:
+		# Garante que o timer seja atualizado ao entrar na fase
+		pygame.time.set_timer(obstacle_timer, timer_interval)
 	elif game_stage == 'phase1':
 		# Gameplay normal (primeira fase)
 		sky_x = (SCREEN_WIDTH - new_width) // 2
@@ -270,6 +274,8 @@ while True:
 			game_stage_start_time = now
 			obstacle_group.empty()  # Limpar obstáculos
 			next_obstacle_time = now + 2000  # 2 segundos de delay
+	elif game_stage == 'cutscene2' and now - game_stage_start_time == 1:
+		pygame.time.set_timer(obstacle_timer, timer_interval)
 	elif game_stage == 'phase2':
 		# Gameplay segunda fase
 		sky_x = (SCREEN_WIDTH - new_width) // 2
@@ -294,6 +300,8 @@ while True:
 			game_stage_start_time = now
 			obstacle_group.empty()  # Limpar obstáculos
 			next_obstacle_time = now + 2000  # 2 segundos de delay
+	elif game_stage == 'cutscene3' and now - game_stage_start_time == 1:
+		pygame.time.set_timer(obstacle_timer, timer_interval)
 	elif game_stage == 'phase3':
 		# Gameplay terceira fase
 		sky_x = (SCREEN_WIDTH - new_width) // 2
