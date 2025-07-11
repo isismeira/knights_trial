@@ -148,12 +148,14 @@ bg_music = pygame.mixer.Sound('audio/music.wav')
 bg_music.play(loops = -1)
 
 # Controle de fases e cutscenes
-# Possíveis valores: 'menu', 'cutscene1', 'phase1', 'cutscene2', 'phase2', 'cutscene3', 'phase3', 'cutscene4'
+# Possíveis valores: 'menu', 'cutscene1', 'phase1', 'cutscene2', 'phase2', 'cutscene3', 'phase3', 'cutscene4', 'game_over'
 game_stage = 'menu'
 # Para controlar o tempo de cada fase/cutscene
 game_stage_start_time = 0
 # Para controlar o tempo do próximo spawn de obstáculo após cada fase
 next_obstacle_time = 0
+# Para controlar o tempo de exibição do game over
+game_over_time = 0
 
 # Carregar imagens das cutscenes
 def load_cutscene(path):
@@ -164,6 +166,8 @@ cutscene1_img = load_cutscene('graphics/cutscene_1.jpeg')
 cutscene2_img = load_cutscene('graphics/cutscene_2.jpeg')
 cutscene3_img = load_cutscene('graphics/cutscene_3.jpeg')
 cutscene4_img = load_cutscene('graphics/cutscene_4.jpeg')
+
+game_over_img = load_cutscene('graphics/game_over.jpeg')
 
 # Groups
 player = pygame.sprite.GroupSingle()
@@ -237,6 +241,11 @@ while True:
 				player.sprite.rect.bottom = player.sprite.ground_y
 				player.sprite.gravity = 0
 				score = 0
+		elif game_stage == 'game_over':
+			# Permitir que o jogador pressione espaço para voltar ao menu imediatamente
+			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+				game_stage = 'menu'
+				game_stage_start_time = pygame.time.get_ticks()
 
 	# Controle de fases/cutscenes
 	now = pygame.time.get_ticks()
@@ -263,7 +272,8 @@ while True:
 		obstacle_group.draw(screen)
 		obstacle_group.update()
 		if not collision_sprite(player, obstacle_group):
-			game_stage = 'menu'
+			game_stage = 'game_over'
+			game_over_time = now
 		elif now - game_stage_start_time >= 15000:
 			game_stage = 'cutscene2'
 			game_stage_start_time = now
@@ -289,7 +299,8 @@ while True:
 		obstacle_group.draw(screen)
 		obstacle_group.update()
 		if not collision_sprite(player, obstacle_group):
-			game_stage = 'menu'
+			game_stage = 'game_over'
+			game_over_time = now
 		elif now - game_stage_start_time >= 15000:
 			game_stage = 'cutscene3'
 			game_stage_start_time = now
@@ -315,13 +326,21 @@ while True:
 		obstacle_group.draw(screen)
 		obstacle_group.update()
 		if not collision_sprite(player, obstacle_group):
-			game_stage = 'menu'
+			game_stage = 'game_over'
+			game_over_time = now
 		elif now - game_stage_start_time >= 15000:
 			game_stage = 'cutscene4'
 			game_stage_start_time = now
 	elif game_stage == 'cutscene4':
 		screen.blit(cutscene4_img, (0, 0))
 		if now - game_stage_start_time >= 5000:
+			game_stage = 'menu'
+			game_stage_start_time = now
+	elif game_stage == 'game_over':
+		screen.blit(game_over_img, (0, 0))
+		# Removida a mensagem de texto na tela de game over
+		# Após 3 segundos, voltar ao menu automaticamente
+		if now - game_over_time >= 3000:
 			game_stage = 'menu'
 			game_stage_start_time = now
 	else:
