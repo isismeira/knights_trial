@@ -248,6 +248,7 @@ while True:
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 				game_stage = 'cutscene1'
 				game_stage_start_time = pygame.time.get_ticks()
+				start_time = pygame.time.get_ticks() // 1000  # Definir start_time para nova partida
 				# Resetar score e grupos
 				obstacle_group.empty()
 				player.sprite.rect.bottom = player.sprite.ground_y
