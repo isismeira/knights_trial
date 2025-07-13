@@ -248,7 +248,7 @@ while True:
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 				game_stage = 'cutscene1'
 				game_stage_start_time = pygame.time.get_ticks()
-				start_time = pygame.time.get_ticks() // 1000  # Definir start_time para nova partida
+				# Remover a definição do start_time aqui
 				# Resetar score e grupos
 				obstacle_group.empty()
 				player.sprite.rect.bottom = player.sprite.ground_y
@@ -267,6 +267,7 @@ while True:
 		if now - game_stage_start_time >= 5000:
 			game_stage = 'phase1'
 			game_stage_start_time = now
+			start_time = pygame.time.get_ticks() // 1000  # Definir start_time quando a fase 1 começa
 			obstacle_group.empty()  # Limpar obstáculos
 			next_obstacle_time = now + 2000  # 2 segundos de delay
 	elif game_stage == 'cutscene1' and now - game_stage_start_time == 1:
