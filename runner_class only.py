@@ -352,10 +352,7 @@ while True:
 	elif game_stage == 'game_over':
 		screen.blit(game_over_img, (0, 0))
 		# Removida a mensagem de texto na tela de game over
-		# Após 3 segundos, voltar ao menu automaticamente
-		if now - game_over_time >= 3000:
-			game_stage = 'menu'
-			game_stage_start_time = now
+		# O retorno ao menu agora ocorre apenas ao pressionar espaço
 	else:
 		# Menu
 		sky_x = (SCREEN_WIDTH - new_width) // 2
