@@ -16,8 +16,7 @@ class Player(pygame.sprite.Sprite):
 		player_walk_9 = pygame.image.load('graphics/player/player_walk_9.png').convert_alpha()
 		player_walk_10 = pygame.image.load('graphics/player/player_walk_10.png').convert_alpha()
 		
-		# Escalar sprites do player proporcionalmente
-		scale_factor = screen_height / 400  # Fator baseado na altura original de 400px
+		scale_factor = screen_height / 400  
 		self.player_walk = []
 		for frame in [player_walk_1, player_walk_2, player_walk_3, player_walk_4, player_walk_5, 
 		             player_walk_6, player_walk_7, player_walk_8, player_walk_9, player_walk_10]:
@@ -288,7 +287,7 @@ while True:
 		if not collision_sprite(player, obstacle_group):
 			game_stage = 'game_over'
 			game_over_time = now
-		elif now - game_stage_start_time >= 15000:
+		elif now - game_stage_start_time >= 30000:
 			game_stage = 'cutscene2'
 			game_stage_start_time = now
 	elif game_stage == 'cutscene2':
@@ -315,7 +314,7 @@ while True:
 		if not collision_sprite(player, obstacle_group):
 			game_stage = 'game_over'
 			game_over_time = now
-		elif now - game_stage_start_time >= 15000:
+		elif now - game_stage_start_time >= 30000:
 			game_stage = 'cutscene3'
 			game_stage_start_time = now
 	elif game_stage == 'cutscene3':
@@ -342,7 +341,7 @@ while True:
 		if not collision_sprite(player, obstacle_group):
 			game_stage = 'game_over'
 			game_over_time = now
-		elif now - game_stage_start_time >= 15000:
+		elif now - game_stage_start_time >= 30000:
 			game_stage = 'cutscene4'
 			game_stage_start_time = now
 	elif game_stage == 'cutscene4':
